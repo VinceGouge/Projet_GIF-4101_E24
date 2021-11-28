@@ -16,15 +16,19 @@ sku_file = pd.read_csv(root + 'sku_filtered.csv')
 Création d'un dataframe contenant les différents features nécessaires
       session_id_hash (peut-être pertinant de remplacer par un id non-encrypté)
       product_sku_hash (peut-être pertinant de remplacer par un id non-encrypté)
+      hashed_url
       add_count_during_session
       add_has_been_detailed
+      price_bucket
       session_length
-      add_price
+      session_interaction_count
+      session_query_count
+      description_vector
 """
 
 # Dataframe ou une ligne = un AC
 featureDataframe = browsing_file.query("product_action == 'add'")
-featureDataframe = featureDataframe.drop(['event_type', 'product_action', 'server_timestamp_epoch_ms', 'hashed_url'], axis=1)
+featureDataframe = featureDataframe.drop(['event_type', 'product_action', 'server_timestamp_epoch_ms'], axis=1)
 
 sessions = featureDataframe['session_id_hash'].unique().tolist() # Liste des sessions distinctes ayant un AC
 
@@ -60,18 +64,23 @@ minTimeStamp = np.array(browsing_file.groupby(['session_id_hash'], sort=False)['
 maxTimeStamp = np.array(browsing_file.groupby(['session_id_hash'], sort=False)['server_timestamp_epoch_ms'].max().tolist())
 minMaxTimeStamp = list(zip(sessions, (maxTimeStamp-minTimeStamp)))
 session_length = pd.DataFrame(data=minMaxTimeStamp, columns=['session_id_hash', 'session_length'])
-featureDataframe = featureDataframe.merge(session_length, on='session_id_hash', how='left')
+featureDataframe = featureDataframe.merge(session_length, on='session_id_hash', how='left', sort=False)
 
 # Ajout du feature indiquant le nombre d'intéraction durant la session
 browsing_file['session_interaction_count'] = browsing_file.groupby(by='session_id_hash')['session_id_hash'].transform('count')
 session_interaction = browsing_file.drop_duplicates(subset='session_id_hash')
-featureDataframe = featureDataframe.merge(session_interaction[['session_id_hash', 'session_interaction_count']], on='session_id_hash', how='left')
+featureDataframe = featureDataframe.merge(session_interaction[['session_id_hash', 'session_interaction_count']], on='session_id_hash', how='left', sort=False)
 
 # Ajout du feature indiquant le nombre de recherche durant la session
 search_file['session_query_count'] = search_file.groupby(by='session_id_hash')['session_id_hash'].transform('count')
 session_query_count = search_file.drop_duplicates(subset='session_id_hash')
-featureDataframe = featureDataframe.merge(session_query_count[['session_id_hash', 'session_query_count']], on='session_id_hash', how='left')
+featureDataframe = featureDataframe.merge(session_query_count[['session_id_hash', 'session_query_count']], on='session_id_hash', how='left', sort=False)
+
+# Ajout de la description du produit pour le Target Encoding
+featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash','description_vector']], on='product_sku_hash', how='left', sort=False)
 
 
+# Enlever le commentaire sur cette ligne lorsque le Target Encoding sera inclus
+#featureDataframe = featureDataframe.drop(['hashed_url', 'description_vector'], axis=1)
 featureDataframe = featureDataframe.fillna(value=0)
 featureDataframe.to_csv('features.csv', header=True, index=False)
