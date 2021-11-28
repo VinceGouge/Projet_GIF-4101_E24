@@ -17,9 +17,9 @@ searchFiltered.to_csv(r'../Dataset_FILTERED/search_filtered.csv', header=True, i
 sku_filtered.to_csv(r'../Dataset_FILTERED/sku_filtered.csv', header=True, index=False)
 
 # 100000 premières lignes des fichiers filtré
-subset_browsingFiltered = browsingFiltered.head(100000)
+subset_browsingFiltered = browsingFiltered.head(10000)
 subset_browsingFiltered.to_csv(r'../Dataset_FILTERED/sub_browsing_filtered.csv', header=True, index=False)
-subset_searchFiltered = searchFiltered.head(100000)
+subset_searchFiltered = searchFiltered.head(10000)
 subset_searchFiltered.to_csv(r'../Dataset_FILTERED/sub_search_filtered.csv', header=True, index=False)
-subset_skuFiltered = sku_filtered.head(100000)
+subset_skuFiltered = sku_filtered.head(10000)
 subset_skuFiltered.to_csv(r'../Dataset_FILTERED/sub_sku_filtered.csv', header=True, index=False)
