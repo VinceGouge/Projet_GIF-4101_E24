@@ -16,7 +16,6 @@ sku_file = pd.read_csv(root + 'sku_filtered.csv')
 Création d'un dataframe contenant les différents features nécessaires
       session_id_hash (peut-être pertinant de remplacer par un id non-encrypté)
       product_sku_hash (peut-être pertinant de remplacer par un id non-encrypté)
-      is_purchased
       add_count_during_session
       add_has_been_detailed
       session_length
