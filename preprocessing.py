@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn import preprocessing
 
 pd.options.mode.chained_assignment = None
 #pd.set_option('display.max_columns', None)
@@ -137,11 +138,15 @@ featureDataframe['nb_add_after'] = featureDataframe['add_count_during_session'] 
 
 
 # Ajout de la description du produit pour le Target Encoding
-featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash','description_vector']], on='product_sku_hash', how='left', sort=False)
+featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash','description_data', 'image_data', 'category_hash']], on='product_sku_hash', how='left', sort=False)
+featureDataframe.to_csv('features_te.csv', header=True, index=False)
 
+min_max_scaler = preprocessing.MinMaxScaler()
+featureDataframe['description_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['description_data'].tolist()))
+featureDataframe['image_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['image_data'].tolist()))
 
 
 # Enlever le commentaire sur la ligne ci-dessous lorsque la matrice de feature sera finale
-featureDataframe = featureDataframe.drop(['session_id_hash', 'product_sku_hash', 'hashed_url', 'interaction_id', 'action_id','description_vector'], axis=1)
+featureDataframe = featureDataframe.drop(['session_id_hash', 'product_sku_hash', 'hashed_url', 'interaction_id', 'action_id', 'category_hash'], axis=1)
 featureDataframe.to_csv('features.csv', header=True, index=False)
 target.to_csv('target.csv', header=True, index=False)
