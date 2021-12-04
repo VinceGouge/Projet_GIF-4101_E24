@@ -14,4 +14,6 @@ Librairie Raytune
 https://docs.ray.io/en/latest/index.html
 Librairie XGboost
 getting-started-with-xgboost-in-scikit-learn-f69f5f470a97
+ à download
+https://pypi.org/project/hiredis/ 
 

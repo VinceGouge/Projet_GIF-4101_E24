@@ -21,8 +21,8 @@ from sklearn.model_selection import cross_val_score,GridSearchCV
 # colsample_bytree : ratio of columns when contructing each tree.  
 # scale_pos_weight : Balancing of positiv and negative weight
 
-n_estimators = numpy.array(numpy.arange(10,510,10)) #510
-max_depth= numpy.array(numpy.arange(2,22,2))
+n_estimators = numpy.array(numpy.arange(10,30,10)) #510
+max_depth= numpy.array(numpy.arange(2,8,2))
 learning_rate=numpy.array(numpy.logspace(0.01,0.8,10))
 reg_lambda=numpy.array(numpy.arange(1,11,1))
 subsample=numpy.array(numpy.arange(0.2,1.2,0.2))
@@ -46,6 +46,7 @@ print(f"total time {delta_time/i} seconds/simulation")
 for n_estimator in n_estimators:
     for  depth in max_depth:
         scores = cross_val_score(XGBClassifier(verbosity=0,silent = True,use_label_encoder=False,n_estimators=n_estimator,max_depth=depth,learning_rate=0.53,reg_lambda=6,subsample=1,colsample_bytree=0.4,scale_pos_weight=1), X, y)
+        print(scores)
         average_score = numpy.mean(scores)
         print(f"{i} n_estimaor {n_estimator} depth {depth} score: {average_score} ")
         #dict_scores[i)] = average_score
