@@ -1,4 +1,5 @@
 from ray import tune
+import numpy as np
 
 
 def objective(step, alpha, beta):
@@ -18,12 +19,15 @@ def training_function(config):
 analysis = tune.run(
     training_function,
     config={
-        "alpha": tune.grid_search([0.001, 0.01, 0.1]),
-        "beta": tune.choice([1, 2, 3])
-    })
+        "alpha": tune.grid_search(list(np.linspace(0.001, 0.1, 5))),
+        "beta": tune.grid_search([1, 2, 3])
+    },
+    resources_per_trial={'gpu': 1},
+    verbose=0)
 
 print("Best config: ", analysis.get_best_config(
     metric="mean_loss", mode="min"))
 
 # Get a dataframe for analyzing trial results.
 df = analysis.results_df
+df.to_csv("result_grid_search.csv")
