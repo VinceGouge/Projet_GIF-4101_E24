@@ -142,8 +142,8 @@ featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash','descript
 featureDataframe.to_csv('features_te.csv', header=True, index=False)
 
 min_max_scaler = preprocessing.MinMaxScaler()
-featureDataframe['description_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['description_data'].tolist()))
-featureDataframe['image_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['image_data'].tolist()))
+featureDataframe['description_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['description_data'].tolist()).reshape(-1, 1))
+featureDataframe['image_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['image_data'].tolist()).reshape(-1, 1))
 
 
 # Enlever le commentaire sur la ligne ci-dessous lorsque la matrice de feature sera finale
