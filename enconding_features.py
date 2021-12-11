@@ -3,7 +3,6 @@ import h2o
 from h2o.estimators import H2OTargetEncoderEstimator
 import pandas as pd
 import numpy as np
-import pandas as pd
 from sklearn import preprocessing
 h2o.init()
 import sklearn
@@ -29,16 +28,23 @@ product_te.train(x=encoded_columns,
                  training_frame=train)
 
 feature_te = product_te.transform(frame=features)
-min_max_scaler = preprocessing.MinMaxScaler()
 feature_df = h2o.as_list(feature_te)
+feature_df = feature_df.drop(['session_id_hash', 'product_id', 'product_sku_hash', 'hashed_url', 'interaction_id', 'action_id', 'category_hash'], axis=1)
+min_max_scaler = preprocessing.MinMaxScaler()
+
+feature_name = feature_df.columns.values.tolist()
+for name in feature_name:
+    feature_df[name] = min_max_scaler.fit_transform(np.array(feature_df[name].tolist()).reshape(-1,1))
+
+'''
 feature_df['category_hash_te'] = min_max_scaler.fit_transform(np.array(feature_df['category_hash_te'].tolist()).reshape(-1, 1))
 feature_df['product_sku_hash_te'] = min_max_scaler.fit_transform(np.array(feature_df['product_sku_hash_te'].tolist()).reshape(-1, 1))
 feature_df['hashed_url_te'] = min_max_scaler.fit_transform(np.array(feature_df['hashed_url_te'].tolist()).reshape(-1, 1))
 feature_df['description_data'] = min_max_scaler.fit_transform(np.array(feature_df['description_data'].tolist()).reshape(-1, 1))
 feature_df['image_data'] = min_max_scaler.fit_transform(np.array(feature_df['image_data'].tolist()).reshape(-1, 1))
+'''
 
-feature_df = feature_df.drop(['session_id_hash', 'product_sku_hash', 'hashed_url', 'interaction_id', 'action_id', 'category_hash'], axis=1)
-feature_df_sub = feature_df.head(10000)
-feature_df_sub.to_csv(r'features_te_sub.csv', header=True, index=False) 
+
+
 feature_df.to_csv(r'features_te.csv', header=True, index=False) 
 

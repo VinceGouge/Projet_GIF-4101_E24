@@ -60,7 +60,7 @@ target = target.fillna(value=0)
 
 
 # Ajout du id du produit
-featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash','product_id']], on='product_sku_hash', how='left')
+featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash','product_id']], on='product_sku_hash', how='left', sort=False)
 
 
 # Ajout du feature indiquant le nombre de AC dans la session
@@ -83,6 +83,7 @@ featureDataframe['has_been_detailed'] = featureDataframe['has_been_detailed'].fi
 
 # Ajout du feature indiquant le prix du produit
 featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash', 'price_bucket']], on='product_sku_hash', how='left')
+featureDataframe['price_bucket'] = featureDataframe['price_bucket'].fillna(value=7)
 
 
 # Ajout du feature indiquant la durée de la session
@@ -104,6 +105,7 @@ detail_interaction = browsing_file.query("product_action == 'detail'")
 detail_interaction['session_detail_count'] = detail_interaction.groupby(['session_id_hash'])['session_id_hash'].transform('count')
 detail_interaction = detail_interaction.drop_duplicates(subset='session_id_hash')
 featureDataframe = featureDataframe.merge(detail_interaction[['session_id_hash', 'session_detail_count']], on='session_id_hash', how='left', sort=False)
+featureDataframe['session_detail_count'] = featureDataframe['session_detail_count'].fillna(value=0)
 
 
 # Ajout du feature indiquant le nombre de pageview durant la session
@@ -141,12 +143,13 @@ featureDataframe['nb_add_after'] = featureDataframe['add_count_during_session'] 
 featureDataframe = featureDataframe.merge(sku_file[['product_sku_hash','description_data', 'image_data', 'category_hash']], on='product_sku_hash', how='left', sort=False)
 featureDataframe.to_csv('features_te.csv', header=True, index=False)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-featureDataframe['description_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['description_data'].tolist()).reshape(-1, 1))
-featureDataframe['image_data'] = min_max_scaler.fit_transform(np.array(featureDataframe['image_data'].tolist()).reshape(-1, 1))
-
-
-# Enlever le commentaire sur la ligne ci-dessous lorsque la matrice de feature sera finale
 featureDataframe = featureDataframe.drop(['session_id_hash', 'product_sku_hash', 'hashed_url', 'interaction_id', 'action_id', 'category_hash'], axis=1)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+feature_name = featureDataframe.columns.values.tolist()
+for name in feature_name:
+    featureDataframe[name] = min_max_scaler.fit_transform(np.array(featureDataframe[name].tolist()).reshape(-1,1))
+
+
 featureDataframe.to_csv('features.csv', header=True, index=False)
 target.to_csv('target.csv', header=True, index=False)

@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np 
 from sklearn.metrics.pairwise import cosine_similarity
 
+pd.options.mode.chained_assignment = None
+
 # Lecture des fichiers csv en tableau pandas
 browsing_file = pd.read_csv('../Dataset_RAW/train/browsing_train.csv')
 search_file = pd.read_csv('../Dataset_RAW/train/search_train.csv')
