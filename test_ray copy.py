@@ -22,7 +22,7 @@ analysis = tune.run(
         "alpha": tune.grid_search(list(np.linspace(0.001, 0.1, 5))),
         "beta": tune.grid_search([1, 2, 3])
     },
-    resources_per_trial={'gpu': 1},
+    resources_per_trial={'cpu': 2},
     verbose=0)
 
 print("Best config: ", analysis.get_best_config(

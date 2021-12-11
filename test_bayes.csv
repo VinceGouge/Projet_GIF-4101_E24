@@ -1,0 +1,2 @@
+trial_id,score,time_this_iter_s,done,timesteps_total,episodes_total,training_iteration,experiment_id,date,timestamp,time_total_s,pid,hostname,node_ip,time_since_restore,timesteps_since_restore,iterations_since_restore,experiment_tag,config.n_estimator,config.depth,config.l_rate,config.resources_per_trial.CPU
+08d32e12,0.6719999999999999,0.5420308113098145,True,,,1,89e54e8d713241b7a2234c6ce31478f4,2021-12-10_14-47-46,1639165666,0.5420308113098145,5344,NicolasSamson,127.0.0.1,0.5420308113098145,0,1,"1_depth=5,l_rate=0.30589,n_estimator=40",40,5,0.3058866938894164,2

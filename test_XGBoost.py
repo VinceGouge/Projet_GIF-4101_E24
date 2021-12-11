@@ -4,16 +4,21 @@ import numpy
 import time
 from ray import tune
 import sklearn.datasets as skl
-
-
+from ray.tune.suggest.bayesopt import BayesOptSearch
+#ray.init(log_to_driver=False)
+import datetime
 #url = 'https://media.githubusercontent.com/media/PacktPublishing/Hands-On-Gradient-Boosting-with-XGBoost-and-Scikit-learn/master/Chapter02/heart_disease.csv'
 #df = pd.read_csv(url)
-X, y = skl.make_moons(n_samples=100000, shuffle=True, noise=None, random_state=None)
+X, y = skl.make_moons(n_samples=1000, shuffle=True, noise=True, random_state=None)
 #X = df.iloc[:, :-1]
 #y = df.iloc[:, -1]
 
 from xgboost import XGBClassifier
 from sklearn.model_selection import cross_val_score,GridSearchCV
+
+
+
+
 
 #n_estimators : number of boosting rounds (20)
 #Max_depth : The maximum tree detph
@@ -54,18 +59,64 @@ start = time.time()
 #grid_search = GridSearchCV(XGBClassifier(verbosity=0,silent = True,use_label_encoder=False),param_grid=param_grid)
 #grid_search.fit(X,y)
 
-analysis = tune.run(
-    training_function,
-    config={
-        "n_estimator": tune.grid_search(list(n_estimators)),
-        "depth": tune.grid_search(list(max_depth)),
-        "l_rate": tune.grid_search(list(learning_rate))
-    },
-    verbose=0)
 
+def run_no_bayes():
+    analysis = tune.run(
+        training_function,
+        config={
+            "n_estimator": tune.grid_search(list(n_estimators)),
+            "depth": tune.grid_search(list(max_depth)),
+            "l_rate": tune.grid_search(list(learning_rate)),
+            "resources_per_trial":{"CPU":2}
+        },
+        verbose=0)
+
+######
+#n_estimators = numpy.array(numpy.arange(10,510,30)) #510
+#max_depth= numpy.array(numpy.arange(2,8,2))
+#learning_rate=numpy.array(numpy.logspace(0.01,0.8,2))
+#reg_lambda=numpy.array(numpy.arange(1,11,1))
+#subsample=numpy.array(numpy.arange(0.2,1.2,0.2))
+#colsample_bytree=numpy.array(numpy.arange(0.2,1.2,0.2))
+#scale_pos_weight=numpy.array(numpy.arange(1,4.5,0.5))
+#config_ = {
+#            "n_estimator": tune.choice(10,510),
+#            "depth": tune.choice(2,8),
+#            "l_rate": tune.choice(0.01,0.8),
+#            "resources_per_trial":{"CPU":2},
+#            
+#        }
+#"""
+def run_bayes():
+    
+    bayesopt = BayesOptSearch(utility_kwargs={"kind":"ucb","kappa":2.5,"xi":0.0})
+    config_ = {
+            "n_estimator": 40,  #tune.randint(10,510)
+            "depth": 5, #tune.randint(2,8)
+            "l_rate": tune.uniform(0.01,0.8),
+            "resources_per_trial":{"CPU":2},
+            
+        }
+
+    analysis = tune.run(
+        training_function,
+        config=config_,
+        search_alg=bayesopt,
+        metric="score", 
+        mode="max",
+        verbose=0)
+    print("Best config: ", analysis.get_best_config(
+    metric="score", mode="max"))
+
+    # Get a dataframe for analyzing trial results.
+    df = analysis.results_df
+    df.to_csv("test_bayes.csv")
+    print(df)
+
+run_bayes()
 delta_time_1 = time.time()-start
 print(f"total time {delta_time_1} seconds")
-#print(f"total time {delta_time} seconds")
+"""#print(f"total time {delta_time} seconds")
 #print(f"total time {delta_time/i} seconds/simulation")
 for n_estimator in n_estimators:
     for  depth in max_depth:
@@ -76,3 +127,5 @@ for n_estimator in n_estimators:
 delta_time = time.time()-delta_time_1-start
 print(f"total time {delta_time} seconds")
 #print(f"total time {delta_time/i} seconds/simulation")
+"""
+
