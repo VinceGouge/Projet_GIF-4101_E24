@@ -75,7 +75,7 @@ def MinEuclideanDist(matrix):
         
     return minDist
 
-def search_grid_SVC(X_train,y_train,result_folder_path):
+def search_grid_SVC(X_train,y_train,result_folder_path,sigma_min):
     """Find the best parameter for the XGB method. Save all the configuration
 
     Args:
@@ -86,11 +86,11 @@ def search_grid_SVC(X_train,y_train,result_folder_path):
         [dict]: Best parameter of the XGB
     """
     # Calculate gamma parameter
-    start = time.time()
-    sigma_min = calculate_sigma_min(X_train)
+    #start = time.time()
+    
     list_sigma = numpy.linspace(1,64,3)*sigma_min # 20
-    end = time.time()
-    print("Cdist time time : ",end-start)
+    #end = time.time()
+    #print("Cdist time time : ",end-start)
     print("sigma_min",sigma_min)
     # Nos paramètre à optimiser
     C = numpy.array(numpy.logspace(-5,5,4)) #11
@@ -253,7 +253,7 @@ def evaluate_SVC(X_test,y_test,X_train,y_train,best_config_r,result_path):
 
     # save score
     best_config_r["average_score_test"] = average_score
-    best_config_r["ascore_train"] = score_train
+    best_config_r["score_train"] = score_train
     results_best_config = best_config_r
 
     df_result = pd.DataFrame(results_best_config,index=[0])
