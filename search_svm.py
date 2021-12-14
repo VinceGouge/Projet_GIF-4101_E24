@@ -255,7 +255,8 @@ def evaluate_SVC(X_test,y_test,X_train,y_train,best_config_r,result_path):
     best_config_r["average_score_test"] = average_score
     best_config_r["score_train"] = score_train
     results_best_config = best_config_r
-
+    poids_variable = model.coef_
+    
     df_result = pd.DataFrame(results_best_config,index=[0])
     path_ = os.path.join(result_path,"XGB_grid_search_best_config.csv")
     df_result.to_csv(path_)

@@ -6,7 +6,7 @@ from pandas._config import config
 from ray import tune
 import sklearn.datasets as skl
 from ray.tune.suggest.bayesopt import BayesOptSearch
-from sklearn.model_selection import cross_val_score,train_test_split
+from sklearn.model_selection import cross_val_score,train_test_split,HalvingGridSearchCV
 import datetime
 
 from xgboost import XGBClassifier
@@ -284,6 +284,7 @@ def evaluate_XGB(X_test,y_test,X_train,y_train,best_config_r,result_path):
     
 
     return results_best_config
+
 
 
 def test():
