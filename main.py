@@ -8,15 +8,15 @@ import os.path as osp
 # 1. Load the data 
 start= time.time()
 
-#x = pd.read_csv('features_te.csv').to_numpy()
-#y = pd.read_csv('target.csv').to_numpy()
+X = pd.read_csv('features_te.csv').to_numpy()
+y = pd.read_csv('target.csv').to_numpy()
 
 
 # 2. Crée un jeu de test et un jeu de train 
 
-#X_train, X_test,y_train,y_test = train_test_split(x,y,stratify=y,test_size=0.5)
+#X_train, X_test,y_train,y_test = train_test_split(X,y,stratify=y,test_size=0.5)
 ########## pour tester 
-X, y= skl.make_moons(n_samples=10000, shuffle=True, noise=True, random_state=None)
+#X, y= skl.make_moons(n_samples=10000, shuffle=True, noise=True, random_state=None)
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
 
 
