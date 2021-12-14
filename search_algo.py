@@ -93,13 +93,21 @@ def search_grid_XGB(X_train,y_train,result_folder_path):
     """
     # Nos paramètre à optimiser
     n_estimators = numpy.array(numpy.arange(10,510,30)) #510
-    max_depth= 4,#numpy.array(numpy.arange(2,8,2))
-    learning_rate=0.05, #numpy.array(numpy.logspace(0.01,0.8,2))
+    max_depth= numpy.array(numpy.arange(2,8,2))
+    learning_rate= numpy.array(numpy.logspace(0.01,0.8,2))
     reg_lambda=numpy.array(numpy.arange(1,11,1))
     subsample=numpy.array(numpy.arange(0.2,1.2,0.2))
     colsample_bytree=numpy.array(numpy.arange(0.2,1.2,0.2))
     scale_pos_weight=numpy.array(numpy.arange(1,4.5,0.5))
 
+    # Nos paramètre à optimiser
+    n_estimators = numpy.array(numpy.arange(10,510,30)) #510
+    max_depth= numpy.array([4]) #numpy.array(numpy.arange(2,8,2))
+    learning_rate=numpy.array([0.4])
+    reg_lambda=numpy.array([4])
+    subsample=numpy.array([0.8])
+    colsample_bytree=numpy.array([0.6])
+    scale_pos_weight=numpy.array([1.5])
     # La commande qui lance la recherche sur nos parmètres
     analysis = tune.run(
         training_function,
@@ -108,11 +116,11 @@ def search_grid_XGB(X_train,y_train,result_folder_path):
             "y_train":y_train,
             "n_estimator":tune.grid_search(list(n_estimators)),
             "depth": tune.grid_search(list(max_depth)),
-            "l_rate": 0.5,#tune.grid_search(list(learning_rate)),
-            "reg_lambda":5, #tune.grid_search(list(reg_lambda)),
-            "subsample":0.8,#tune.grid_search(list(subsample)),
-            "colsample_bytree":0.8, #tune.grid_search(list(colsample_bytree)),
-            "scale_pos_weight":3.0, #tune.grid_search(list(scale_pos_weight)),
+            "l_rate": tune.grid_search(list(learning_rate)),
+            "reg_lambda": tune.grid_search(list(reg_lambda)),
+            "subsample": tune.grid_search(list(subsample)),
+            "colsample_bytree":tune.grid_search(list(colsample_bytree)),
+            "scale_pos_weight":tune.grid_search(list(scale_pos_weight)),
             "resources_per_trial":{"CPU":1}
         },
         verbose=0)
@@ -120,9 +128,12 @@ def search_grid_XGB(X_train,y_train,result_folder_path):
     best_config_r = analysis.get_best_config(metric="score", mode="max")
     best_config_r.pop("X_train")
     best_config_r.pop("y_train")
+    best_config_r["method"] = "search_grid_XGB"
     print("Best config: ", best_config_r)
     results = []
     i = 0 
+
+    # To save all the different configuration
     all_config_score= analysis.results
     for result in all_config_score.values():
         config = result["config"]
@@ -137,7 +148,6 @@ def search_grid_XGB(X_train,y_train,result_folder_path):
     df_result = pd.DataFrame.from_records(results)
     path_ = os.path.join(result_folder_path,"XGB_grid_search_scores.csv")
     df_result.to_csv(path_)
-    
     
 
     return best_config_r
@@ -183,7 +193,7 @@ def run__(X_train,y_train,n_estimator,max_depth,learning_rate,reg_lambda,subsamp
     df_2 = df.append(df_result)
     df_2.to_csv(path_)
     return best_config_r[parameter_name] 
-def search_grid_XGB_2(X_train,y_train,result_folder_path):
+def search_grid_XGB_max_max(X_train,y_train,result_folder_path):
     """Find the best parameter for the XGB method. Save all the configuration
 
     Args:
@@ -195,22 +205,22 @@ def search_grid_XGB_2(X_train,y_train,result_folder_path):
     """
     # Nos paramètre à optimiser
     n_estimators = numpy.array(numpy.arange(10,510,30)) #510
-    max_depth= numpy.array(numpy.arange(2,8,2))
+    max_depth= numpy.array(numpy.arange(2,8,2)) #numpy.array(numpy.arange(2,8,2))
     learning_rate=numpy.array(numpy.logspace(0.01,0.8,10))
     reg_lambda=numpy.array(numpy.arange(1,11,1))
     subsample=numpy.array(numpy.arange(0.2,1.2,0.2))
     colsample_bytree=numpy.array(numpy.arange(0.2,1.2,0.2))
     scale_pos_weight=numpy.array(numpy.arange(1,4.5,0.5))
 
-    """
-            "n_estimator":tune.grid_search(list(n_estimators)),
-            "depth": tune.grid_search(list(max_depth)),
-            "l_rate": 0.5,#tune.grid_search(list(learning_rate)),
-            "reg_lambda":5, #tune.grid_search(list(reg_lambda)),
-            "subsample":0.8,#tune.grid_search(list(subsample)),
-            "colsample_bytree":0.8, #tune.grid_search(list(colsample_bytree)),
-            "scale_pos_weight":3.0, #tune.grid_search(list(scale_pos_weight)),
-    """
+    # Nos paramètre à optimiser
+    n_estimators = numpy.array(numpy.arange(10,510,30)) #510
+    max_depth= numpy.array([4]) #numpy.array(numpy.arange(2,8,2))
+    learning_rate=numpy.array([0.4])
+    reg_lambda=numpy.array([4])
+    subsample=numpy.array([0.8])
+    colsample_bytree=numpy.array([0.6])
+    scale_pos_weight=numpy.array([1.5])
+    
     parameter_names = ["n_estimator","depth","l_rate","reg_lambda","subsample","colsample_bytree","scale_pos_weight"]
     fixed_parameter = [n_estimators[0],max_depth[0],learning_rate[0],reg_lambda[0],subsample[0],colsample_bytree[0],scale_pos_weight[0]]
     tune_parameter = [tune.grid_search(list(n_estimators)),tune.grid_search(list(max_depth)),
@@ -230,6 +240,7 @@ def search_grid_XGB_2(X_train,y_train,result_folder_path):
         fixed_parameter[indice_parameter] = best_parameter
     
     best_config = dict(zip(parameter_names,fixed_parameter))
+    best_config["method"] = "search_grid_max_max_XGB"
     return best_config
         
     
@@ -263,7 +274,8 @@ def evaluate_XGB(X_test,y_test,X_train,y_train,best_config_r,result_path):
 
     # save score
     best_config_r["average_score_test"] = average_score
-    best_config_r["ascore_train"] = score_train
+    best_config_r["score_train"] = score_train
+    
     results_best_config = best_config_r
 
     df_result = pd.DataFrame(results_best_config,index=[0])
@@ -271,7 +283,9 @@ def evaluate_XGB(X_test,y_test,X_train,y_train,best_config_r,result_path):
     df_result.to_csv(path_)
     
 
-    return average_score,scores,results_best_config
+    return results_best_config
+
+
 def test():
     X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=True, random_state=None)
     X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)

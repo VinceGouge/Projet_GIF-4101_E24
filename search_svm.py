@@ -128,7 +128,7 @@ def search_grid_SVC(X_train,y_train,result_folder_path,sigma_min):
     path_ = os.path.join(result_folder_path,"SVC_grid_search_scores.csv")
     df_result.to_csv(path_)
     
-    
+    best_config_r["method"] = "search_grid_svc"
 
     return best_config_r
 
