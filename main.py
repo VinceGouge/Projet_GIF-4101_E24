@@ -16,37 +16,42 @@ y = pd.read_csv('target.csv').to_numpy()
 
 #X_train, X_test,y_train,y_test = train_test_split(X,y,stratify=y,test_size=0.5)
 ########## pour tester 
-#X, y= skl.make_moons(n_samples=10000, shuffle=True, noise=True, random_state=None)
+X, y= skl.make_moons(n_samples=100, shuffle=True, noise=True, random_state=None)
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
 
 
 # 2.5 Créer le fichier de résultats
 path = sal.get_folder_path()
 
+best_score_summary = []
 # 3. test préliminaire des classifieurs
 #   3.1 Classifieurs 1 (SVC linear)
         # Calculer la valeur de sigma min
-#sigma_min = ss.calculate_sigma_min(X_train)
+sigma_min = 2.82e-6
 #best_config = ss.search_grid_SVC(X_train,y_train,path,sigma_min)
 #print(best_config)
 #       3.1.1 Methode search 1 (Max-Max)
 #       3.1.2 Methode search 2 (Grid search)
+best_config_parameter_search_grid_ss = ss.search_grid_SVC(X_train,y_train,path,sigma_min=sigma_min)
+best_config_result_score_svc_search_grid = ss.evaluate_SVC(X_test,y_test,X_train,y_train,best_config_parameter_search_grid_ss,path)
+best_score_summary.append(best_config_result_score_svc_search_grid)
 
 #svm_best_score = ss.evaluate_SVC(X_test,y_test,X_train,y_train,best_config,path)
 #   3.2 Classifieurs 2 (XGBoost)
 
-best_score_summary = []
 #       3.2.1 Methode search 1
-best_config_parameter_max = sal.search_grid_XGB_max_max(X_train,y_train,path)
+#best_config_parameter_max = sal.search_grid_XGB_max_max(X_train,y_train,path)
 
-best_config_result_score_XGB_max_max = sal.evaluate_XGB(X_test,y_test,X_train,y_train,best_config_parameter_max,path)
-best_score_summary.append(best_config_result_score_XGB_max_max)
+#best_config_result_score_XGB_max_max = sal.evaluate_XGB(X_test,y_test,X_train,y_train,best_config_parameter_max,path)
+#best_score_summary.append(best_config_result_score_XGB_max_max)
 
 #       Estimate the  Search method
 best_config_parameter_search_grid = sal.search_grid_XGB(X_train,y_train,path)
 
 best_config_result_score_XGB_search_grid = sal.evaluate_XGB(X_test,y_test,X_train,y_train,best_config_parameter_search_grid,path)
 best_score_summary.append(best_config_result_score_XGB_search_grid)
+
+
 
 
 
