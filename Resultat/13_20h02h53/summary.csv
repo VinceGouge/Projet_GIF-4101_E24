@@ -1,0 +1,3 @@
+,n_estimator,depth,l_rate,reg_lambda,subsample,colsample_bytree,scale_pos_weight,method,average_score_test,score_train,resources_per_trial
+0,10,4,0.4,4,0.8,0.6,1.5,search_grid_max_max_XGB,0.6724,0.708,
+1,10,4,0.4,4,0.8,0.6,1.5,search_grid_XGB,0.6724,0.708,{'CPU': 1}
