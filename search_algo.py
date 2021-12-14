@@ -92,9 +92,9 @@ def search_grid_XGB(X_train,y_train,result_folder_path):
         [dict]: Best parameter of the XGB
     """
     # Nos paramètre à optimiser
-    n_estimators = numpy.array(numpy.arange(10,510,30)) #510
-    max_depth= 4,#numpy.array(numpy.arange(2,8,2))
-    learning_rate=0.05, #numpy.array(numpy.logspace(0.01,0.8,2))
+    n_estimators = numpy.array(numpy.arange(10,510,10))
+    max_depth= numpy.array(numpy.arange(2,22,2))
+    learning_rate=numpy.array(numpy.logspace(0.01,0.8,10))
     reg_lambda=numpy.array(numpy.arange(1,11,1))
     subsample=numpy.array(numpy.arange(0.2,1.2,0.2))
     colsample_bytree=numpy.array(numpy.arange(0.2,1.2,0.2))
@@ -108,12 +108,11 @@ def search_grid_XGB(X_train,y_train,result_folder_path):
             "y_train":y_train,
             "n_estimator":tune.grid_search(list(n_estimators)),
             "depth": tune.grid_search(list(max_depth)),
-            "l_rate": 0.5,#tune.grid_search(list(learning_rate)),
-            "reg_lambda":5, #tune.grid_search(list(reg_lambda)),
-            "subsample":0.8,#tune.grid_search(list(subsample)),
-            "colsample_bytree":0.8, #tune.grid_search(list(colsample_bytree)),
-            "scale_pos_weight":3.0, #tune.grid_search(list(scale_pos_weight)),
-            "resources_per_trial":{"CPU":1}
+            "l_rate": tune.grid_search(list(learning_rate)),
+            "reg_lambda":tune.grid_search(list(reg_lambda)),
+            "subsample":tune.grid_search(list(subsample)),
+            "colsample_bytree":tune.grid_search(list(colsample_bytree)),
+            "scale_pos_weight":tune.grid_search(list(scale_pos_weight))
         },
         verbose=0)
     
@@ -155,7 +154,6 @@ def run__(X_train,y_train,n_estimator,max_depth,learning_rate,reg_lambda,subsamp
                 "subsample":subsample,
                 "colsample_bytree":colsample_bytree,
                 "scale_pos_weight":scale_pos_weight,
-                "resources_per_trial":{"CPU":1}
             },
             verbose=0)
         
@@ -194,8 +192,8 @@ def search_grid_XGB_2(X_train,y_train,result_folder_path):
         [dict]: Best parameter of the XGB
     """
     # Nos paramètre à optimiser
-    n_estimators = numpy.array(numpy.arange(10,510,30)) #510
-    max_depth= numpy.array(numpy.arange(2,8,2))
+    n_estimators = numpy.array(numpy.arange(10,510,10))
+    max_depth= numpy.array(numpy.arange(2,22,2))
     learning_rate=numpy.array(numpy.logspace(0.01,0.8,10))
     reg_lambda=numpy.array(numpy.arange(1,11,1))
     subsample=numpy.array(numpy.arange(0.2,1.2,0.2))
