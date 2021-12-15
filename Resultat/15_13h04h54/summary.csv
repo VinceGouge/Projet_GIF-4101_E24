@@ -1,0 +1,3 @@
+,C,gamma,kernel,method,average_score_test,score_train,n_estimator,depth,l_rate,reg_lambda,subsample,colsample_bytree,scale_pos_weight
+0,100000.0,15350122.29012625,linear,search_grid_svc,0.892,1.0,,,,,,,
+1,,,,search_grid_XGB,0.992,0.996,10.0,4.0,0.4,4.0,0.8,0.6,1.5

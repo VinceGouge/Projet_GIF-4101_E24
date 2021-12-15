@@ -20,7 +20,7 @@ from scipy.spatial.distance import cdist
 ############################### 1. Grid XGBClassifier
 
 ## Si prend trop de temps réduire cross val 
-def objective_SVC(X_train,y_train,C,gamma):
+def objective_SVC(X_train,y_train,C,gamma,kernel):
     """The function that evaluate the combination of parameter. 
 
     Returns:
@@ -29,9 +29,11 @@ def objective_SVC(X_train,y_train,C,gamma):
     # Split the dataset
     X_train_2,X_valid,y_train_2,y_valid = train_test_split(X_train,y_train,stratify=y_train,test_size=0.5)
     # Define the model
-    model = SVC(C=C,gamma=gamma)
+    model = SVC(C=C,gamma=gamma,kernel=kernel)
     model.fit(X_train_2,y_train_2)
     # Evaluate
+    print("____________C :",C)
+    print("_________gamma:",gamma)
     score = model.score(X_valid,y_valid)
     
     return score
@@ -48,9 +50,11 @@ def training_function(config):
     #        "colsample_bytree":0.8, #tune.grid_search(list(colsample_bytree)),
     #        "scale_pos_weight":3.0, #tune.grid_search(list(scale_pos_weight)),
     #        "resources_per_trial":{"CPU":1}
-    C,gamma = config["C"],config["gamma"]
+    C,gamma,kernel = config["C"],config["gamma"],config["kernel"]
     X_train,y_train = config["X_train"], config["y_train"]
-    intermediate_score = objective_SVC(X_train,y_train,C,gamma)
+
+    intermediate_score = objective_SVC(X_train,y_train,C,gamma,kernel)
+    print("score:",intermediate_score)
     # Feed the score back back to Tune.
     tune.report(score=intermediate_score)
 
@@ -102,6 +106,7 @@ def search_grid_SVC(X_train,y_train,result_folder_path,sigma_min):
         training_function,
         config={'C': tune.grid_search(list(C)),
         'gamma': tune.grid_search(list(gamma)),
+        'kernel':tune.choice(["linear", "rbf", "sigmoid"]),
         "X_train":X_train,
         "y_train":y_train
         },
@@ -147,10 +152,10 @@ def evaluate_SVC(X_test,y_test,X_train,y_train,best_config_r,result_path):
         [list]: Average test_scores, the different test_score, train_score
     """
    
-    C, gamma = best_config_r["C"], best_config_r["gamma"]
+    C, gamma,kernel = best_config_r["C"], best_config_r["gamma"],best_config_r["kernel"]
     
     # Calculate the score of the test 
-    scores = cross_val_score(SVC(C=C,gamma=gamma), X_test, y_test,cv=5)
+    scores = cross_val_score(SVC(C=C,gamma=gamma,kernel=kernel), X_test, y_test,cv=5)
     average_score = numpy.mean(scores)
     # Claculate the training score
     model = SVC(C=C,gamma=gamma)

@@ -1,2 +1,0 @@
-,n_estimator,depth,l_rate,reg_lambda,subsample,colsample_bytree,scale_pos_weight,average_score_test,ascore_train
-0,10,2,1.023292992280754,8,0.8,0.6000000000000001,1.0,0.7066,0.7116

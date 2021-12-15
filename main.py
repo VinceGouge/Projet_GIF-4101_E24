@@ -16,12 +16,12 @@ y = pd.read_csv('target.csv').to_numpy()
 
 #X_train, X_test,y_train,y_test = train_test_split(X,y,stratify=y,test_size=0.5)
 ########## pour tester 
-X, y= skl.make_moons(n_samples=100, shuffle=True, noise=True, random_state=None)
+X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=False, random_state=None)
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
 
 
 # 2.5 Créer le fichier de résultats
-path = sal.get_folder_path()
+path = sal.get_folder_path(name="test")
 
 best_score_summary = []
 # 3. test préliminaire des classifieurs

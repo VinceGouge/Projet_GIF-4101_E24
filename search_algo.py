@@ -14,17 +14,20 @@ import os
 ############################ Grid search de base ########################
 
 
-def get_folder_path():
+def get_folder_path(name=""):
     """Get time to save the results
 
     Returns:
         [type]: [description]
     """
+    
     now = datetime.datetime.today()
     time = str(now)[8:19]
     time_2 = time.replace(" ","_")
     time_3 = time_2.replace(":","h")
     path = os.path.join("Resultat",time_3)
+    if name !="":
+        path = os.path.join(name,path)
     os.mkdir(path)
     return path
 
