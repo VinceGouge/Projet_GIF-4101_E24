@@ -1,0 +1,2 @@
+,n_estimator,depth,l_rate,reg_lambda,subsample,colsample_bytree,scale_pos_weight,method,score,average_score_test,score_train
+0,90,2,2.2967361763386362,7,0.2,1.0,3.0,search_grid_max_max_XGB,0.996,0.99,0.998

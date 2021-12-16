@@ -1,0 +1,2 @@
+,n_estimator,depth,l_rate,reg_lambda,subsample,colsample_bytree,scale_pos_weight,method,score
+0,270,4,1.023292992280754,1,1.0,0.8,1.0,search_grid_max_max_XGB,0.840415589459758
