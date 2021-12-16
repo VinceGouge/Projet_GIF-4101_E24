@@ -3,13 +3,16 @@ from numpy import linalg as LA
 import numpy
 from scipy.spatial.distance import cdist
 
-a = numpy.arange(12)-4
+matrice_fixed_parameter = numpy.array([[0,1,2,3,4,5,6],
+[1,2,3,4,5,6,0],
+[2,3,4,5,6,0,1],
+[3,4,5,6,0,1,2],
+[4,5,6,0,1,2,3],
+[5,6,0,1,2,3,4],
+[6,0,1,2,3,4,5]])
 
-b = a.reshape((4,3))
-print(b)
-print(LA.norm(b,ord=2,axis=1))
+for i in matrice_fixed_parameter:
+    print(i)
+print(matrice_fixed_parameter)
 
-
-print(x)
-print(min_value)
-print(min_value.min())
+print(matrice_fixed_parameter[1,:])

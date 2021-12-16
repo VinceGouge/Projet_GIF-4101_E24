@@ -32,8 +32,8 @@ def objective_SVC(X_train,y_train,C,gamma,kernel):
     model = SVC(C=C,gamma=gamma,kernel=kernel)
     model.fit(X_train_2,y_train_2)
     # Evaluate
-    print("____________C :",C)
-    print("_________gamma:",gamma)
+    #print("____________C :",C)
+    #print("_________gamma:",gamma)
     score = model.score(X_valid,y_valid)
     
     return score
@@ -54,7 +54,7 @@ def training_function(config):
     X_train,y_train = config["X_train"], config["y_train"]
 
     intermediate_score = objective_SVC(X_train,y_train,C,gamma,kernel)
-    print("score:",intermediate_score)
+    
     # Feed the score back back to Tune.
     tune.report(score=intermediate_score)
 
@@ -92,12 +92,12 @@ def search_grid_SVC(X_train,y_train,result_folder_path,sigma_min):
     # Calculate gamma parameter
     #start = time.time()
     
-    list_sigma = numpy.linspace(1,64,3)*sigma_min # 20
+    list_sigma = numpy.linspace(1,64,20)*sigma_min # 20
     #end = time.time()
     #print("Cdist time time : ",end-start)
-    print("sigma_min",sigma_min)
+    
     # Nos paramètre à optimiser
-    C = numpy.array(numpy.logspace(-5,5,4)) #11
+    C = numpy.array(numpy.logspace(-5,5,11)) #11
     gamma = 0.5*list_sigma**(-2)#numpy.array(numpy.arange(2,8,2))
     
 

@@ -31,6 +31,9 @@ visualizer.show()
 ranking = (visualizer.ranking_)
 nom_features = ["f0","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12","f13","f14","f15","f16","f17","f18","f19","f20","f21","f22","f23","f24"]
 
+# Parameter 
+parameter_name = ["product_sku_hash_te","hashed_url_te","category_hash_te","add_count_during_session","has_been_detailed","price_bucket","session_length","session_interaction_count","session_detail_count","session_pageview_count","session_query_count","nb_click_before","nb_click_after","nb_add_before","nb_add_after","image_data","description_data"]
+
 index_list = []
 value_list = []
 

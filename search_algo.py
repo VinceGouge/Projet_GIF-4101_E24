@@ -25,9 +25,10 @@ def get_folder_path(name=""):
     time = str(now)[8:19]
     time_2 = time.replace(" ","_")
     time_3 = time_2.replace(":","h")
-    path = os.path.join("Resultat",time_3)
     if name !="":
-        path = os.path.join(name,path)
+        time_3 = name + time_3
+    path = os.path.join("Resultat",time_3)
+    
     os.mkdir(path)
     return path
 
@@ -193,7 +194,7 @@ def run__(X_train,y_train,n_estimator,max_depth,learning_rate,reg_lambda,subsamp
     df = pd.read_csv(path_)
     df_2 = df.append(df_result)
     df_2.to_csv(path_)
-    return best_config_r[parameter_name] 
+    return best_config_r[parameter_name],config["score"]
 def search_grid_XGB_max_max(X_train,y_train,result_folder_path):
     """Find the best parameter for the XGB method. Save all the configuration
 
@@ -237,14 +238,96 @@ def search_grid_XGB_max_max(X_train,y_train,result_folder_path):
     for indice_parameter in range(len(parameter_names)):
         fixed_parameter[indice_parameter] = tune_parameter[indice_parameter]
         parameter_name = parameter_names[indice_parameter]
-        best_parameter = run__(X_train,y_train,fixed_parameter[0],fixed_parameter[1],fixed_parameter[2],fixed_parameter[3],fixed_parameter[4],fixed_parameter[5],fixed_parameter[6],result_folder_path,parameter_name)
+        best_parameter,score = run__(X_train,y_train,fixed_parameter[0],fixed_parameter[1],fixed_parameter[2],fixed_parameter[3],fixed_parameter[4],fixed_parameter[5],fixed_parameter[6],result_folder_path,parameter_name)
         fixed_parameter[indice_parameter] = best_parameter
     
     best_config = dict(zip(parameter_names,fixed_parameter))
     best_config["method"] = "search_grid_max_max_XGB"
     return best_config
         
+
+def search_grid_XGB_max_max_boucler(X_train,y_train,result_folder_path,nombre_iteration_ = 7):
+    """Find the best parameter for the XGB method. Save all the configuration
+
+    Args:
+        X_train ([type]): [description]
+        y_train ([type]): [description]
+
+    Returns:
+        [dict]: Best parameter of the XGB
+    """
+
     
+    # Nos paramètre à optimiser
+    n_estimators = numpy.array(numpy.arange(10,510,10))
+    max_depth= numpy.array(numpy.arange(2,22,2))
+    learning_rate=numpy.array(numpy.logspace(0.01,0.8,10))
+    reg_lambda=numpy.array(numpy.arange(1,11,1))
+    subsample=numpy.array(numpy.arange(0.2,1.2,0.2))
+    colsample_bytree=numpy.array(numpy.arange(0.2,1.2,0.2))
+    scale_pos_weight=numpy.array(numpy.arange(1,4.5,0.5))
+
+    # Nos paramètre à optimiser
+    #n_estimators = numpy.array(numpy.arange(10,510,30)) #510
+    #max_depth= numpy.array([4,10]) #numpy.array(numpy.arange(2,8,2))
+    #learning_rate=numpy.array([0.4,0.6])
+    #reg_lambda=numpy.array([4,10])
+    #subsample=numpy.array([0.8,1.2])
+    #colsample_bytree=numpy.array([0.6,1.2])
+    #scale_pos_weight=numpy.array([1.5,3])
+    
+    parameter_names = ["n_estimator","depth","l_rate","reg_lambda","subsample","colsample_bytree","scale_pos_weight"]
+    fixed_parameter = [n_estimators[0],max_depth[0],learning_rate[0],reg_lambda[0],subsample[0],colsample_bytree[0],scale_pos_weight[0]]
+    #matrice_fixed_parameter = numpy.array([[0,1,2,3,4,5,6],
+    #[1,2,3,4,5,6,0],
+    #[2,3,4,5,6,0,1],
+    #[3,4,5,6,0,1,2],
+    #[4,5,6,0,1,2,3],
+    #[5,6,0,1,2,3,4],
+    #[6,0,1,2,3,4,5]])
+    fixed_parameter = [n_estimators[0],max_depth[0],learning_rate[0],reg_lambda[0],subsample[0],colsample_bytree[0],scale_pos_weight[0]]
+    
+    tune_parameter = [tune.grid_search(list(n_estimators)),tune.grid_search(list(max_depth)),
+    tune.grid_search(list(learning_rate)),tune.grid_search(list(reg_lambda)),tune.grid_search(list(subsample)),
+    tune.grid_search(list(colsample_bytree)),tune.grid_search(list(scale_pos_weight))]
+    order = numpy.array([0,1,2,3,4,5,6])
+    dict_best_config = {}
+    best_best_config = {}
+    score_max = 0
+    start = time.time()
+    for i_iterat in range(nombre_iteration_):
+        
+        numpy.random.shuffle(order)
+        
+        # Crée la matrice de résultats de recherche
+        
+        empty_result = pd.DataFrame(columns=["n_estimator","depth","l_rate","reg_lambda","subsample","colsample_bytree","scale_pos_weight","resources_per_trial","total_time","score","parameter_searched"])
+        path_search_result = os.path.join(result_folder_path,"XGB_grid_search_scores.csv")
+        empty_result.to_csv(path_search_result)
+        # Définit la for loop pour grid search chaque paramètre
+        
+        for i_test,indice_parameter in enumerate(order):
+            fixed_parameter[indice_parameter] = tune_parameter[indice_parameter]
+            parameter_name = parameter_names[indice_parameter]
+            best_parameter,score_ = run__(X_train,y_train,fixed_parameter[0],fixed_parameter[1],fixed_parameter[2],fixed_parameter[3],fixed_parameter[4],fixed_parameter[5],fixed_parameter[6],result_folder_path,parameter_name)
+            fixed_parameter[indice_parameter] = best_parameter
+
+            
+
+    
+
+        best_config = dict(zip(parameter_names,fixed_parameter))
+        best_config["method"] = "search_grid_max_max_XGB"
+        best_config["score"] = score_
+        if score_ >score_max:
+            best_best_config = best_config
+        dict_best_config[str(order)] = best_config
+        delta_time = time.time()-start
+        print("Temps par iteration max max ",delta_time/(i_iterat+1))
+    data_config = pd.DataFrame.from_records(dict_best_config)
+    path_test_config =  os.path.join(result_folder_path,"ma_max_iteration.csv")
+    data_config.to_csv(path_test_config)
+    return best_best_config
 
 def evaluate_XGB(X_test,y_test,X_train,y_train,best_config_r,result_path):
     """Calculate the score of the train set and the test set for the best parameter configuration.

@@ -17,11 +17,11 @@ y = pd.read_csv('target.csv').to_numpy()
 #X_train, X_test,y_train,y_test = train_test_split(X,y,stratify=y,test_size=0.5)
 ########## pour tester 
 X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=False, random_state=None)
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
+#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
 
 
 # 2.5 Créer le fichier de résultats
-path = sal.get_folder_path(name="test")
+path = sal.get_folder_path(name="Test")
 
 best_score_summary = []
 # 3. test préliminaire des classifieurs
@@ -36,6 +36,8 @@ best_config_parameter_search_grid_ss = ss.search_grid_SVC(X_train,y_train,path,s
 best_config_result_score_svc_search_grid = ss.evaluate_SVC(X_test,y_test,X_train,y_train,best_config_parameter_search_grid_ss,path)
 best_score_summary.append(best_config_result_score_svc_search_grid)
 
+time_svc = round(time.time()-start,2)
+print("_________________________\n \n","SVC COMPLETEEEEEEED in", time_svc," s \n_________________________\n \n")
 #svm_best_score = ss.evaluate_SVC(X_test,y_test,X_train,y_train,best_config,path)
 #   3.2 Classifieurs 2 (XGBoost)
 
@@ -46,10 +48,12 @@ best_score_summary.append(best_config_result_score_svc_search_grid)
 #best_score_summary.append(best_config_result_score_XGB_max_max)
 
 #       Estimate the  Search method
-best_config_parameter_search_grid = sal.search_grid_XGB(X_train,y_train,path)
+best_config_parameter_search_grid = sal.search_grid_XGB_max_max_boucler(X_train,y_train,path)
 
 best_config_result_score_XGB_search_grid = sal.evaluate_XGB(X_test,y_test,X_train,y_train,best_config_parameter_search_grid,path)
 best_score_summary.append(best_config_result_score_XGB_search_grid)
+time_XGB = round(time.time()-start-time_svc,2)
+print("_________________________\n \n","XGB COMPLETEEEEEEED in", time_XGB ,"s \n_________________________\n \n")
 
 
 
@@ -58,7 +62,7 @@ best_score_summary.append(best_config_result_score_XGB_search_grid)
 summary_csv = pd.DataFrame.from_records(best_score_summary)
 summary_csv.to_csv(osp.join(path,"summary.csv"))
 
-
+print("Total time",round(time.time()-start))
 # Faire graphique RFE 
 # Y score, x RFE
 # 
