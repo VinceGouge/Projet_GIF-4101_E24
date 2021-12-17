@@ -15,12 +15,9 @@ y = pd.read_csv('target.csv').to_numpy()
 
 # 2. Crée un jeu de test et un jeu de train 
 
-#X_train, X_test,y_train,y_test = train_test_split(X,y,stratify=y,test_size=0.5)
 ########## pour tester 
 #X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=False, random_state=None)
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
-
-X_train_2,X_valid,y_train_2,y_valid = train_test_split(X_train,y_train,test_size=0.50,stratify=y_train)
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y,random_state=1)
 
 
 # 2.5 Créer le fichier de résultats

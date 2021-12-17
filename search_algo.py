@@ -10,7 +10,8 @@ from sklearn.model_selection import cross_val_score,train_test_split
 import datetime
 
 from xgboost import XGBClassifier
-import os
+from os.path import join
+from os import mkdir
 ############################ Grid search de base ########################
 
 
@@ -27,9 +28,9 @@ def get_folder_path(name=""):
     time_3 = time_2.replace(":","h")
     if name !="":
         time_3 = name + time_3
-    path = os.path.join("Resultat",time_3)
+    path = join("Resultat",time_3)
     
-    os.mkdir(path)
+    mkdir(path)
     return path
 
 
@@ -54,7 +55,7 @@ def objective_XGB(X_train,y_train,n_estimator, depth, l_rate,reg_lambda,subsampl
         [type]: Score on the X_validation after train on the X_train.
     """
     # Split the dataset
-    X_train_2,X_valid,y_train_2,y_valid = train_test_split(X_train,y_train,stratify=y_train,test_size=0.5)
+    X_train_2,X_valid,y_train_2,y_valid = train_test_split(X_train,y_train,stratify=y_train,test_size=0.5,random_state=1)
     # Define the model
     model = XGBClassifier(verbosity=0,silent = True,use_label_encoder=False,n_estimators=n_estimator,
     max_depth=depth,learning_rate=l_rate,reg_lambda=reg_lambda,subsample=subsample,colsample_bytree=colsample_bytree,scale_pos_weight=scale_pos_weight)
@@ -149,7 +150,7 @@ def search_grid_XGB(X_train,y_train,result_folder_path):
     #all_config_score.pop("X_train")
     #all_config_score.pop("y_train")
     df_result = pd.DataFrame.from_records(results)
-    path_ = os.path.join(result_folder_path,"XGB_grid_search_scores.csv")
+    path_ = join(result_folder_path,"XGB_grid_search_scores.csv")
     df_result.to_csv(path_)
     
 
@@ -190,7 +191,7 @@ def run__(X_train,y_train,n_estimator,max_depth,learning_rate,reg_lambda,subsamp
     #all_config_score.pop("X_train")
     #all_config_score.pop("y_train")
     df_result = pd.DataFrame.from_records(results,columns=["n_estimator","depth","l_rate","reg_lambda","subsample","colsample_bytree","scale_pos_weight","resources_per_trial","total_time","score","parameter_searched"])
-    path_ = os.path.join(result_folder_path,"XGB_grid_search_scores.csv")
+    path_ = join(result_folder_path,"XGB_grid_search_scores.csv")
     df = pd.read_csv(path_)
     df_2 = df.append(df_result)
     df_2.to_csv(path_)
@@ -231,7 +232,7 @@ def search_grid_XGB_max_max(X_train,y_train,result_folder_path):
     # Crée la matrice de résultats de recherche
     
     empty_result = pd.DataFrame(columns=["n_estimator","depth","l_rate","reg_lambda","subsample","colsample_bytree","scale_pos_weight","resources_per_trial","total_time","score","parameter_searched"])
-    path_search_result = os.path.join(result_folder_path,"XGB_grid_search_scores.csv")
+    path_search_result = join(result_folder_path,"XGB_grid_search_scores.csv")
     empty_result.to_csv(path_search_result)
     # Définit la for loop pour grid search chaque paramètre
     
@@ -302,7 +303,7 @@ def search_grid_XGB_max_max_boucler(X_train,y_train,result_folder_path,nombre_it
         # Crée la matrice de résultats de recherche
         
         empty_result = pd.DataFrame(columns=["n_estimator","depth","l_rate","reg_lambda","subsample","colsample_bytree","scale_pos_weight","resources_per_trial","total_time","score","parameter_searched"])
-        path_search_result = os.path.join(result_folder_path,"XGB_grid_search_scores.csv")
+        path_search_result = join(result_folder_path,"XGB_grid_search_scores.csv")
         empty_result.to_csv(path_search_result)
         # Définit la for loop pour grid search chaque paramètre
         
@@ -324,8 +325,11 @@ def search_grid_XGB_max_max_boucler(X_train,y_train,result_folder_path,nombre_it
         dict_best_config[str(order)] = best_config
         delta_time = time.time()-start
         print("Temps par iteration max max ",delta_time/(i_iterat+1))
-    data_config = pd.DataFrame.from_records(dict_best_config)
-    path_test_config =  os.path.join(result_folder_path,"ma_max_iteration.csv")
+        df_best_config = pd.DataFrame(best_config, index=[0])
+        path_inter = join(result_folder_path, f'resultats_max_max_{i_iterat}.csv')
+        df_best_config.to_csv(path_inter)
+    data_config = pd.DataFrame.from_dict(dict_best_config, orient='index')
+    path_test_config = join(result_folder_path,"max_max_iteration.csv")
     data_config.to_csv(path_test_config)
     return best_best_config
 
@@ -363,7 +367,7 @@ def evaluate_XGB(X_test,y_test,X_train,y_train,best_config_r,result_path):
     results_best_config = best_config_r
 
     df_result = pd.DataFrame(results_best_config,index=[0])
-    path_ = os.path.join(result_path,"XGB_grid_search_best_config.csv")
+    path_ = join(result_path,"XGB_grid_search_best_config.csv")
     df_result.to_csv(path_)
     
 
@@ -371,10 +375,10 @@ def evaluate_XGB(X_test,y_test,X_train,y_train,best_config_r,result_path):
 
 
 
-def test():
-    X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=True, random_state=None)
-    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
-    path = get_folder_path()
-    best_config = search_grid_XGB_2(X_train,y_train,path)
-    print(best_config)
-    evaluate_XGB(X_test,y_test,X_train,y_train,best_config,path)
+#def test():
+#    X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=True, random_state=None)
+#    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
+#    path = get_folder_path()
+#    best_config = search_grid_XGB_2(X_train,y_train,path)
+#    print(best_config)
+#    evaluate_XGB(X_test,y_test,X_train,y_train,best_config,path)
