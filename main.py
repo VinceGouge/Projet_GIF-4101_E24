@@ -5,6 +5,7 @@ import sklearn.datasets  as skl
 import search_algo as sal
 import search_svm as ss
 import os.path as osp
+import numpy as np
 # 1. Load the data 
 start= time.time()
 
@@ -16,8 +17,10 @@ y = pd.read_csv('target.csv').to_numpy()
 
 #X_train, X_test,y_train,y_test = train_test_split(X,y,stratify=y,test_size=0.5)
 ########## pour tester 
-X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=False, random_state=None)
-#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
+#X, y= skl.make_moons(n_samples=1000, shuffle=True, noise=False, random_state=None)
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.50,stratify=y)
+
+X_train_2,X_valid,y_train_2,y_valid = train_test_split(X_train,y_train,test_size=0.50,stratify=y_train)
 
 
 # 2.5 Créer le fichier de résultats
@@ -32,8 +35,12 @@ sigma_min = 2.82e-6
 #print(best_config)
 #       3.1.1 Methode search 1 (Max-Max)
 #       3.1.2 Methode search 2 (Grid search)
-best_config_parameter_search_grid_ss = ss.search_grid_SVC(X_train,y_train,path,sigma_min=sigma_min)
-best_config_result_score_svc_search_grid = ss.evaluate_SVC(X_test,y_test,X_train,y_train,best_config_parameter_search_grid_ss,path)
+#best_config_parameter_search_grid_ss = ss.search_grid_SVC(X_train,y_train,path,sigma_min=sigma_min)
+best_config_parameter_search_grid_ss = {"C":1e-5,"gamma":59525776,"kernel":"rbf"}
+#print("VALID")
+#best_config_result_score_svc_search_grid = ss.evaluate_SVC(X_valid,np.ravel(y_valid),X_train_2,np.ravel(y_train_2),best_config_parameter_search_grid_ss,path)
+print("TEST")
+best_config_result_score_svc_search_grid = ss.evaluate_SVC(X_test,np.ravel(y_test),X_train,np.ravel(y_train),best_config_parameter_search_grid_ss,path)
 best_score_summary.append(best_config_result_score_svc_search_grid)
 
 time_svc = round(time.time()-start,2)
@@ -48,10 +55,10 @@ print("_________________________\n \n","SVC COMPLETEEEEEEED in", time_svc," s \n
 #best_score_summary.append(best_config_result_score_XGB_max_max)
 
 #       Estimate the  Search method
-best_config_parameter_search_grid = sal.search_grid_XGB_max_max_boucler(X_train,y_train,path)
+#best_config_parameter_search_grid = sal.search_grid_XGB_max_max_boucler(X_train,y_train,path)
 
-best_config_result_score_XGB_search_grid = sal.evaluate_XGB(X_test,y_test,X_train,y_train,best_config_parameter_search_grid,path)
-best_score_summary.append(best_config_result_score_XGB_search_grid)
+#best_config_result_score_XGB_search_grid = sal.evaluate_XGB(X_test,y_test,X_train,y_train,best_config_parameter_search_grid,path)
+#best_score_summary.append(best_config_result_score_XGB_search_grid)
 time_XGB = round(time.time()-start-time_svc,2)
 print("_________________________\n \n","XGB COMPLETEEEEEEED in", time_XGB ,"s \n_________________________\n \n")
 
