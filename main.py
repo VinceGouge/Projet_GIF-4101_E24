@@ -47,7 +47,7 @@ print("_________________________\n \n","SVC COMPLETEEEEEEED in", time_svc," s \n
 #best_score_summary.append(best_config_result_score_XGB_max_max)
 
 #       Estimate the  Search method
-best_config_parameter_search_grid = sal.search_grid_XGB_max_max_boucler(X_train,y_train,path, nombre_iteration_=2)
+best_config_parameter_search_grid = sal.search_grid_XGB_max_max_boucler(X_train,y_train,path, nombre_iteration_=3)
 
 best_config_result_score_XGB_search_grid = sal.evaluate_XGB(X_test,y_test,X_train,y_train,best_config_parameter_search_grid,path)
 best_score_summary.append(best_config_result_score_XGB_search_grid)
