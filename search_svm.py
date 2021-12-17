@@ -155,24 +155,18 @@ def evaluate_SVC(X_test,y_test,X_train,y_train,best_config_r,result_path):
     C, gamma,kernel = best_config_r["C"], best_config_r["gamma"],best_config_r["kernel"]
     
     # Calculate the score of the test 
-    scores = cross_val_score(SVC(C=C,gamma=gamma,kernel=kernel), X_test, y_test,cv=5)
-    average_score = numpy.mean(scores)
     # Claculate the training score
-    model = SVC(C=C,gamma=gamma)
+    model = SVC(C=C,gamma=gamma,kernel=kernel)
     model.fit(X_train,y_train)
+    print("voilà")
     score_train = model.score(X_train,y_train)
+    print("voilà_2")
+    score_test = model.score(X_test,y_test)
 
     # save score
-    best_config_r["average_score_test"] = average_score
-    best_config_r["score_train"] = score_train
-    results_best_config = best_config_r
-
+    print("score_train",score_train)
+    print("score_test",score_test)
     #parameter_name = ["product_sku_hash_te","hashed_url_te","category_hash_te","add_count_during_session","has_been_detailed","price_bucket","session_length","session_interaction_count","session_detail_count","session_pageview_count","session_query_count","nb_click_before","nb_click_after","nb_add_before","nb_add_after","image_data","description_data"]
     #poids_variable = model.coef_
     
     
-
-    df_result = pd.DataFrame(results_best_config,index=[0])
-    path_ = os.path.join(result_path,"XGB_grid_search_best_config.csv")
-    df_result.to_csv(path_)
-    return results_best_config

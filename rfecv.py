@@ -34,6 +34,7 @@ nom_features = ["f0","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f
 # Parameter 
 parameter_name = ["product_sku_hash_te","hashed_url_te","category_hash_te","add_count_during_session","has_been_detailed","price_bucket","session_length","session_interaction_count","session_detail_count","session_pageview_count","session_query_count","nb_click_before","nb_click_after","nb_add_before","nb_add_after","image_data","description_data"]
 
+params_value = [3,6,1,1,1,1,5,1,1,1,1,1,1,1,1,2,4]
 index_list = []
 value_list = []
 
